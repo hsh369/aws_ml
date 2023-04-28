@@ -1,0 +1,130 @@
+Creating a reward function is like designing an incentive plan. Parameters are values that can be used to develop your incentive plan.
+Different incentive strategies result in different vehicle behaviors. To encourage the vehicle to drive faster, try awarding negative values when the car takes too long to finish a lap or goes off the track. To avoid zig-zag driving patterns, try defining a steering angle range limit and rewarding the car for steering less aggressively on straight sections of the track.
+You can use waypoints, which are numbered markers placed along the centerline and outer and inner edges of the track, to help you associate certain driving behaviors with specific features of a track, like straightaways and curves.
+Crafting an effective reward function is a creative and iterative process. Try different strategies, mix and match parameters, and most importantly, have fun!
+
+Create most optimal reward function which takes a dictionary object passed as the variable, params, as the input usin Proximal Policy Optimization (PP0) or Soft Actor Critic (SAC).
+
+def reward_function(params) :
+    reward = ...
+    return float(reward)
+
+
+The params dictionary object contains the following key-value pairs:
+
+1. all_wheels_on_track
+Type: Boolean
+Range: (True:False)
+A Boolean flag to indicate whether the agent is on track or not on track. The agent is not on track (False) if any of its wheels are outside of the track borders. It's on track (True) if all four wheels are inside the inner and outer track borders. The following illustration shows an agent that is on track.
+
+2. closest_waypoints
+Type: [int, int]
+Range: [(0:Max-1),(1:Max-1)]
+The zero-based indices of the two neighboring waypoints closest to the agent's current position of(x, y). The distance is measured by the Euclidean distance from the center of the agent. The first element refers to the closest waypoint behind the agent and the second element refers the closest waypoint in front of the agent. Max is the length of the waypoints list. 
+AWS DeepRacer supports the following Python libraries: math, random, numpy, scipy, and shapely. To use one, add an import statement, import supported library, preceding your function definition,def reward_function(params).
+
+3. closest_objects
+Type: [int, int]
+Range: [(0:len(object_locations)-1), 0:len(object_locations)-1]
+The zero-based indices of the two closest objects to the agent's current position of (x, y). The first index refers to the closest object behind the agent, and the second index refers to the closest object in front of the agent. If there is only one object, both indices are 0.
+
+4. distance_from_center
+Type: float
+Range: 0:~track_width/2
+Displacement, in meters, between the agent's center and the track's center. The observable maximum displacement occurs when any of the agent's wheels are outside a track border and, depending on the width of the track border, can be slightly smaller or larger than half the track_width.
+
+5. heading
+Type: float
+Range: -180:+180
+The heading direction, in degrees, of the agent with respect to the x-axis of the coordinate system.
+
+6. is_crashed
+Type: Boolean
+Range: (True:False)
+A Boolean flag that indicates whether the agent has crashed into another object (True) or not (False) as a termination status.
+
+7. is_left_of_center
+Type: Boolean
+Range: [True : False]
+A Boolean flag that indicates if the agent is left of the track center (True) or not left of the track 
+
+8. center (False).
+is_offtrack
+Type: Boolean
+Range: (True:False)
+A Boolean flag that indicate if all four of the agent's wheels have driven outside of the track's inner or outer boarders (True) or not (False).
+
+9. is_reversed
+Type: Boolean
+Range: [True:False]
+A Boolean flag that indicates if the agent is driving clockwise (True) or counterclockwise (False).
+It's used when you enable direction change for each episode.
+
+10. objects_distance
+Type: [float, … ]
+Range: [(0:track_length), … ]
+A list of distances between objects in the environment in relation to the starting line. The ith element measures the distance in meters between the ith object and the starting line along the track center line.
+Note
+abs | (var1) - (var2)| = how close the car is to an object, WHEN var1 = ["objects_distance"][index] and var2 = params["progress"]*params["track_length"]
+To get an index of the closest object in front of the vehicle and the closest object behind the vehicle, use the closest_objects parameter.
+
+11. objects_heading
+Type: [float, … ]
+Range: [(-180:180), … ]
+List of the headings of objects in degrees. The ith element measures the heading of the ith object. Stationary objects' headings are 0. For bot cars, the corresponding element's value is the bot car's heading angle.
+
+12. objects_left_of_center
+Type: [Boolean, … ]
+Range: [True|False, … ]
+List of Boolean flags. The ith element value indicates whether the ith object is to the left (True) or right (False) of the track center.
+
+13. objects_location
+Type: [(x,y), ...]
+Range: [(0:N,0:N), ...]
+This parameter stores all object locations. Each location is a tuple of (x, y (p. 32)).
+The size of the list equals the number of objects on the track. The objects listed include both stationary obstacles and moving bot cars.
+
+14. objects_speed
+Type: [float, … ]
+Range: [(0:12.0), … ]
+List of speeds (meters per second) for the objects on the track. For stationary objects, their speeds are 0. For a bot vehicle, the value is the speed you set in training.
+
+15. progress
+Type: float
+Range: 0:100
+Percentage of track completed.
+
+16. speed
+Type: float
+Range: 0.0:5.0
+The observed speed of the agent, in meters per second (m/s).
+
+17. steering_angle
+Type: float
+Range: -30:30
+Steering angle, in degrees, of the front wheels from the center line of the agent. The negative sign (-) means steering to the right and the positive (+) sign means steering to the left. The agent's centerline is not necessarily parallel with the track center line as is shown in the following illustration.
+
+18. steps
+Type: int
+Range: 0:Nstep
+The number of steps completed. A step corresponds to one observation-action sequence completed by the agent using the current policy.
+
+19. track_length
+Type: float
+Range: [0:Lmax]
+The track length in meters. Lmax is track-dependent.
+
+20. track_width
+Type: float
+Range: 0:Dtrack
+Track width in meters.
+
+21. x, y
+Type: float
+Range: 0:N
+Location, in meters, of the agent's center along the x and y axes of the simulated environment containing the track. The origin is at the lower-left corner of the simulated environment
+
+22. waypoints
+Type: list of [float, float]
+Range: [[xw,0,yw,0] … [xw,Max-1, yw,Max-1]]
+An ordered list of track-dependent Max milestones along the track center. Each milestone is described by a coordinate of (xw,i, yw,i). For a looped track, the first and last waypoints are the same. For a straight or other non-looped track, the first and last waypoints are different.
