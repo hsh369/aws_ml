@@ -128,3 +128,10 @@ Location, in meters, of the agent's center along the x and y axes of the simulat
 Type: list of [float, float]
 Range: [[xw,0,yw,0] … [xw,Max-1, yw,Max-1]]
 An ordered list of track-dependent Max milestones along the track center. Each milestone is described by a coordinate of (xw,i, yw,i). For a looped track, the first and last waypoints are the same. For a straight or other non-looped track, the first and last waypoints are different.
+
+
+print(angle3pt((2, 2), (2, 4), (4, 2)))
+print(angle3pt((2, 2), (2, 4), (4, 6)))
+print(angle3pt((2, 2), (2, 4), (2, 6)))
+print(angle3pt((2, 2), (2, 4), (0, 6)))
+print(angle3pt((2, 2), (2, 4), (0, 2)))
